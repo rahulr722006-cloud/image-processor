@@ -1,218 +1,230 @@
-// --- DOM Elements ---
+// UI elements
 const dropArea = document.getElementById('drop-area');
 const fileInput = document.getElementById('file-input');
 const selectFilesBtn = document.getElementById('select-files-btn');
 const processBtn = document.getElementById('process-btn');
-const clearBtn = document.getElementById('clear-btn'); // New element
-const statusMessage = document.getElementById('status-message');
-const statusMessageResults = document.getElementById('status-message-results'); // New element for results section status
-const fileList = document.getElementById('file-list');
+const clearBtn = document.getElementById('clear-btn');
+const statusLine = document.getElementById('status-line');
+const fileGrid = document.getElementById('file-grid');
 const downloadZipBtn = document.getElementById('download-zip-btn');
-const resultsSection = document.getElementById('results-section'); // New element to show/hide results
 
-// --- Settings Elements ---
-const outputFormatEl = document.getElementById('output-format');
-const maxWidthEl = document.getElementById('max-width');
+const outputFormat = document.getElementById('output-format');
 const qualityEl = document.getElementById('quality');
-const qualityValueEl = document.getElementById('quality-value');
+const qualityValue = document.getElementById('quality-value');
+const maxWidthEl = document.getElementById('max-width');
+const preserveAspect = document.getElementById('preserve-aspect');
 
-// --- Global State ---
-let imageFiles = [];
-let processedBlobs = [];
-const mimeMap = {
-    'webp': 'image/webp',
-    'jpeg': 'image/jpeg',
-    'png': 'image/png',
-    'keep': 'keep'
+let images = []; // {id, file, thumbnailUrl, blob, status, dom}
+
+// helpers
+const mimeFor = (fmt, originalType) => {
+  if (fmt === 'keep') return originalType;
+  if (fmt === 'webp') return 'image/webp';
+  if (fmt === 'jpeg') return 'image/jpeg';
+  if (fmt === 'png') return 'image/png';
+  return originalType;
 };
 
-// --- Initial Event Listeners ---
+const uid = () => crypto.randomUUID?.() || Date.now().toString(36);
 
-// 1. Handle File Input (Button Click)
-selectFilesBtn.addEventListener('click', () => fileInput.click());
+// drag & drop
+selectFilesBtn.addEventListener('click', ()=>fileInput.click());
+dropArea.addEventListener('dragover', e=>{ e.preventDefault(); dropArea.style.transform='translateY(-6px)'; });
+dropArea.addEventListener('dragleave', e=>{ e.preventDefault(); dropArea.style.transform='none'; });
+dropArea.addEventListener('drop', e=>{ e.preventDefault(); dropArea.style.transform='none'; handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', e=> handleFiles(e.target.files));
 
-// 2. Handle File Drop/Select
-dropArea.addEventListener('drop', handleDrop, false);
-fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+// slider text
+qualityEl.addEventListener('input', ()=> qualityValue.textContent = Number(qualityEl.value).toFixed(2));
 
-// 3. Handle Process Button Click
-processBtn.addEventListener('click', processImages);
+// handle files
+function handleFiles(fileList){
+  const arr = Array.from(fileList).filter(f=>f.type && f.type.startsWith('image/'));
+  if (!arr.length) return;
+  arr.forEach(file=>{
+    const id = uid();
+    const thumbUrl = URL.createObjectURL(file);
+    const item = {id, file, thumbnailUrl: thumbUrl, blob: null, status:'ready', dom: null};
+    images.push(item);
+    renderFileCard(item);
+  });
+  updateStatus();
+}
 
-// 4. Handle ZIP Download Button Click
-downloadZipBtn.addEventListener('click', downloadZip);
+function renderFileCard(item){
+  const card = document.createElement('div'); card.className='file-card'; card.id = 'card-'+item.id;
+  const img = document.createElement('img'); img.className='thumb'; img.src = item.thumbnailUrl;
+  const meta = document.createElement('div'); meta.className='file-meta';
+  meta.innerHTML = `<b>${item.file.name}</b><div class="small">Original: ${(item.file.size/1024).toFixed(1)} KB</div>
+    <div class="progress"><i style="width:0%"></i></div>`;
+  const actions = document.createElement('div'); actions.className='file-actions';
+  const downloadBtn = document.createElement('button'); downloadBtn.className='btn small'; downloadBtn.textContent='Download'; downloadBtn.disabled=true;
+  const removeBtn = document.createElement('button'); removeBtn.className='btn small ghost'; removeBtn.textContent='Remove';
+  actions.appendChild(downloadBtn); actions.appendChild(removeBtn);
+  card.appendChild(img); card.appendChild(meta); card.appendChild(actions);
+  fileGrid.appendChild(card);
 
-// 5. Handle Clear Button
-clearBtn.addEventListener('click', clearFiles);
+  // attach dom refs
+  item.dom = {card, img, meta, downloadBtn, removeBtn};
+  // handlers
+  removeBtn.addEventListener('click', ()=> {
+    URL.revokeObjectURL(item.thumbnailUrl);
+    images = images.filter(x=>x.id !== item.id);
+    card.remove();
+    updateStatus();
+  });
+  downloadBtn.addEventListener('click', ()=> {
+    if (!item.blob) return;
+    const a = document.createElement('a');
+    a.href = item.blob.url;
+    a.download = item.blob.name;
+    document.body.appendChild(a); a.click(); a.remove();
+  });
 
-// 6. Listener for Range Slider to update the number display
-qualityEl.addEventListener('input', (e) => {
-    qualityValueEl.textContent = e.target.value;
+  updateStatus();
+}
+
+function updateStatus(){
+  statusLine.textContent = `Ready — ${images.length} file(s)`;
+  processBtn.disabled = images.length === 0;
+  downloadZipBtn.disabled = true;
+}
+
+// compress logic (canvas)
+function compressImage(file, options){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        let w = img.naturalWidth, h = img.naturalHeight;
+        const maxW = options.maxWidth || 0;
+        if (maxW > 0 && w > maxW) {
+          if (options.preserveAspect) {
+            const ratio = maxW / w;
+            w = Math.round(maxW);
+            h = Math.round(h * ratio);
+          } else {
+            w = maxW;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        const isLossy = (options.mime === 'image/jpeg' || options.mime === 'image/webp');
+        const q = isLossy ? options.quality : undefined;
+        canvas.toBlob((blob) => {
+          if (!blob) return reject(new Error('toBlob failed'));
+          const ext = options.mime.split('/')[1].split('+')[0] || 'jpg';
+          const base = file.name.replace(/\.[^/.]+$/, '');
+          const outName = `${base}_opt.${ext}`;
+          const url = URL.createObjectURL(blob);
+          resolve({blob, url, name:outName, size:blob.size, mime: blob.type});
+        }, options.mime, q);
+      } catch (err) { reject(err); }
+    };
+    img.onerror = ()=> reject(new Error('image load error'));
+    // use object url to avoid base64 memory
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// process all images sequentially (keeps memory lower)
+async function processAll(){
+  if (!images.length) return;
+  processBtn.disabled = true;
+  clearBtn.disabled = true;
+  statusLine.textContent = 'Processing...';
+  const fmt = outputFormat.value;
+  const maxW = parseInt(maxWidthEl.value || '0');
+  const q = parseFloat(qualityEl.value || '0.8');
+  const preserve = preserveAspect.checked;
+
+  for (let i=0;i<images.length;i++){
+    const item = images[i];
+    const domProgress = item.dom.meta.querySelector('.progress > i');
+    item.dom.meta.querySelector('.small').textContent = 'Processing...';
+    try {
+      const mime = mimeFor(fmt, item.file.type);
+      // Update visual progress (fake progressive fill)
+      domProgress.style.width = '10%';
+      const result = await compressImage(item.file, {mime, quality:q, maxWidth:maxW, preserveAspect:preserve});
+      item.blob = {url: result.url, name: result.name, size: result.size, mime: result.mime};
+      item.dom.downloadBtn.disabled = false;
+      const oldKB = (item.file.size/1024).toFixed(1);
+      const newKB = (result.size/1024).toFixed(1);
+      item.dom.meta.querySelector('.small').innerHTML = `Original: ${oldKB} KB → ${newKB} KB`;
+      domProgress.style.width = '100%';
+    } catch (err) {
+      item.dom.meta.querySelector('.small').textContent = 'Error';
+    }
+    // small delay for UX animation
+    await new Promise(r=>setTimeout(r,120));
+  }
+
+  // enable zip/download all
+  downloadZipBtn.disabled = images.filter(x=>x.blob).length === 0;
+  processBtn.disabled = false; clearBtn.disabled = false;
+  statusLine.textContent = `Done — ${images.length} processed`;
+}
+
+// download zip
+function downloadAllZip(){
+  const zip = new JSZip();
+  const valid = images.filter(i=>i.blob);
+  if (!valid.length) return;
+  downloadZipBtn.disabled = true;
+  statusLine.textContent = 'Creating ZIP...';
+  valid.forEach(item=>{
+    zip.file(item.blob.name, item.blob.blob || item.blob); // item.blob.blob may not exist, but toBlob returned raw blob earlier; we store created blob only as URL + size + name so we need to fetch blob again
+  });
+
+  // But we stored only URLs + sizes; convert each URL back to blob by fetch
+  Promise.all(valid.map(it => fetch(it.blob.url).then(r=>r.blob()).then(b=>({name:it.blob.name, blob:b}))))
+    .then(files => {
+      const z = new JSZip();
+      files.forEach(f => z.file(f.name, f.blob));
+      return z.generateAsync({type:'blob'});
+    })
+    .then(content => {
+      const a = document.createElement('a');
+      const url = URL.createObjectURL(content);
+      a.href = url; a.download = 'compressed_images.zip';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      statusLine.textContent = 'ZIP ready';
+      downloadZipBtn.disabled = false;
+    })
+    .catch(err => {
+      console.error(err);
+      statusLine.textContent = 'ZIP error';
+      downloadZipBtn.disabled = false;
+    });
+}
+
+// wire buttons
+processBtn.addEventListener('click', processAll);
+clearBtn.addEventListener('click', ()=>{
+  images.forEach(it=>{ try{ URL.revokeObjectURL(it.thumbnailUrl); if (it.blob) URL.revokeObjectURL(it.blob.url); }catch(e){} });
+  images = [];
+  fileGrid.innerHTML = '';
+  updateStatus();
+});
+downloadZipBtn.addEventListener('click', downloadAllZip);
+
+// keyboard paste support
+window.addEventListener('paste', (ev)=> {
+  const items = ev.clipboardData?.items;
+  if (!items) return;
+  const imgs = [];
+  for (const it of items) {
+    if (it.type && it.type.startsWith('image/')) {
+      const f = it.getAsFile();
+      if (f) imgs.push(f);
+    }
+  }
+  if (imgs.length) handleFiles(imgs);
 });
 
-// 7. Drag and Drop visual feedback handlers
-dropArea.addEventListener('dragover', (e) => { e.preventDefault(); dropArea.style.backgroundColor = '#2c333a'; dropArea.style.borderColor = '#61afef'; });
-dropArea.addEventListener('dragleave', (e) => { e.preventDefault(); dropArea.style.backgroundColor = '#242930'; dropArea.style.borderColor = '#3c4450'; });
-dropArea.addEventListener('dragenter', (e) => { e.preventDefault(); dropArea.style.backgroundColor = '#2c333a'; dropArea.style.borderColor = '#61afef'; });
-
-
-// --- Main Functions ---
-
-function clearFiles() {
-    imageFiles = [];
-    processedBlobs = [];
-    fileInput.value = '';
-    statusMessage.textContent = '0 file(s) ready';
-    processBtn.disabled = true;
-    resultsSection.style.display = 'none';
-    fileList.innerHTML = '';
-}
-
-function handleDrop(e) {
-    e.preventDefault();
-    dropArea.style.backgroundColor = '#242930';
-    dropArea.style.borderColor = '#3c4450';
-    const dt = e.dataTransfer;
-    handleFiles(dt.files);
-}
-
-function handleFiles(files) {
-    // Filter for only image files
-    imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
-    processedBlobs = [];
-    fileList.innerHTML = '';
-    
-    if (imageFiles.length > 0) {
-        statusMessage.textContent = `${imageFiles.length} file(s) ready`;
-        processBtn.disabled = false;
-        resultsSection.style.display = 'none';
-    } else {
-        clearFiles();
-    }
-}
-
-async function processImages() {
-    if (imageFiles.length === 0) return;
-
-    processBtn.disabled = true;
-    downloadZipBtn.disabled = true;
-    resultsSection.style.display = 'block';
-    statusMessageResults.textContent = `Processing ${imageFiles.length} images...`;
-    fileList.innerHTML = '';
-    processedBlobs = [];
-
-    const format = outputFormatEl.value;
-    const maxWidth = parseInt(maxWidthEl.value);
-    const quality = parseFloat(qualityEl.value);
-    const targetMimeType = format === 'keep' ? null : mimeMap[format];
-
-    for (const file of imageFiles) {
-        // Wait for each image to be processed before moving to the next
-        await processSingleImage(file, maxWidth, targetMimeType, quality);
-    }
-
-    statusMessageResults.textContent = `Finished processing ${imageFiles.length} images!`;
-    if (processedBlobs.length > 0) {
-        downloadZipBtn.disabled = false;
-    }
-    processBtn.disabled = false;
-}
-
-function processSingleImage(file, maxWidth, targetMimeType, quality) {
-    return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (readerEvent) => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-
-                // Determine final dimensions
-                if (maxWidth > 0 && width > maxWidth) {
-                    height = Math.round(height * (maxWidth / width));
-                    width = maxWidth;
-                }
-                
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                
-                // Determine the mime type for output
-                const outputMimeType = targetMimeType || file.type;
-                
-                // Get the blob from the canvas
-                canvas.toBlob((blob) => {
-                    const originalSizeKB = (file.size / 1024).toFixed(1);
-                    const newSizeKB = (blob.size / 1024).toFixed(1);
-
-                    // Determine the new file name
-                    const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-                    // Get extension based on the final output mime type
-                    const extension = outputMimeType.split('/')[1] || file.name.split('.').pop(); 
-                    const newFileName = `${baseName}_optimized.${extension}`;
-
-                    processedBlobs.push({ blob, name: newFileName });
-
-                    // Display Results
-                    displayResult({
-                        originalName: file.name,
-                        newName: newFileName,
-                        originalSize: originalSizeKB,
-                        newSize: newSizeKB
-                    });
-                    
-                    resolve();
-                }, outputMimeType, outputMimeType === 'image/png' ? 1.0 : quality); // PNG quality is ignored, so use 1.0
-            };
-            img.src = readerEvent.target.result;
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-function displayResult(info) {
-    const div = document.createElement('div');
-    div.classList.add('file-info');
-    
-    const sizeComparison = `<span style="color: ${info.newSize < info.originalSize ? '#28a745' : '#dc3545'};">
-        ${info.originalSize} KB &rarr; ${info.newSize} KB
-    </span>`;
-
-    div.innerHTML = `
-        <span>${info.originalName} &rarr; ${info.newName}</span>
-        ${sizeComparison}
-    `;
-    fileList.appendChild(div);
-}
-
-function downloadZip() {
-    const zip = new JSZip();
-    
-    statusMessageResults.textContent = 'Generating ZIP file...';
-    downloadZipBtn.disabled = true;
-    
-    // Add all processed images (blobs) to the ZIP file
-    processedBlobs.forEach(item => {
-        zip.file(item.name, item.blob);
-    });
-
-    // Generate the ZIP file and trigger download
-    zip.generateAsync({ type: 'blob' })
-    .then(function(content) {
-        const url = URL.createObjectURL(content);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'optimized_images.zip';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        statusMessageResults.textContent = 'ZIP file downloaded successfully!';
-        downloadZipBtn.disabled = false;
-    })
-    .catch(() => {
-        statusMessageResults.textContent = 'Error creating ZIP file.';
-        downloadZipBtn.disabled = false;
-    });
-}
+// initial UI update
+updateStatus();
