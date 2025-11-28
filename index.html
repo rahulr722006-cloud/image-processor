@@ -1,60 +1,110 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serverless Bulk Image Compressor & Converter</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Compressly · Studio Horizon — Client-side Image Compressor</title>
+  <meta name="description" content="Compressly by Studio Horizon — compress, resize & convert images in your browser. Private. Fast. Batch processing and ZIP download." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <!-- placeholder for AdSense global script (paste your script after approval) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> -->
 </head>
 <body>
-    <header>
-        <h1>🖼️ Bulk Image Optimizer (Client-Side)</h1>
-        <p>Compress, resize, and convert images to WebP/JPEG/PNG—all in your browser. **Files never leave your computer!**</p>
+  <div class="site">
+    <header class="site-header">
+      <div class="brand">
+        <a href="/" class="brand-link" aria-label="Studio Horizon">
+          <picture>
+            <source srcset="/assets/logo-studio-horizon.webp" type="image/webp">
+            <img src="/assets/logo-studio-horizon.png" alt="Studio Horizon" class="brand-logo">
+          </picture>
+        </a>
+        <div class="brand-text">
+          <div class="studio">Studio Horizon</div>
+          <div class="product">Compressly — Image Optimizer</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="/about.html">About</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
     </header>
 
-    <main>
-        <div id="drop-area">
-            <input type="file" id="file-input" accept="image/*" multiple hidden>
-            <p>Drag & Drop Images Here</p>
-            <button id="select-files-btn">Or Select Files</button>
+    <main class="container">
+      <section class="hero">
+        <div class="hero-inner">
+          <h1>Shrink images instantly. No uploads. Full privacy.</h1>
+          <p class="lead">Drag & drop photos, convert to WebP/JPEG/PNG, set quality & max width, and download compressed images — individually or as a ZIP. Everything runs in your browser.</p>
+
+          <div class="tool-grid">
+            <div id="drop-area" class="drop-area">
+              <div class="drop-content">
+                <svg viewBox="0 0 24 24" class="drop-icon" aria-hidden><path fill="currentColor" d="M12 3l4 4h-3v6h-2V7H8l4-4zM5 16v3h14v-3h2v5H3v-5h2z"/></svg>
+                <div class="drop-title">Drop images here</div>
+                <button id="select-files-btn" class="link-btn">Select files</button>
+                <div class="drop-hint">Supports JPG, PNG, GIF, WebP — Batch compression</div>
+                <input id="file-input" type="file" accept="image/*" multiple hidden>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <label class="label">Output format</label>
+              <select id="output-format">
+                <option value="keep">Keep original</option>
+                <option value="webp">WebP (.webp)</option>
+                <option value="jpeg">JPEG (.jpg)</option>
+                <option value="png">PNG (.png)</option>
+              </select>
+
+              <label class="label">Quality <span id="quality-value">0.80</span></label>
+              <input id="quality" type="range" min="0.1" max="1" step="0.01" value="0.8">
+
+              <label class="label">Max width (px) — 0 = keep</label>
+              <input id="max-width" type="number" min="0" value="0" placeholder="1200">
+
+              <label class="small-check"><input id="preserve-aspect" type="checkbox" checked> Preserve aspect</label>
+
+              <div class="actions">
+                <button id="process-btn" class="btn primary" disabled>Compress Selected</button>
+                <button id="clear-btn" class="btn ghost">Clear</button>
+              </div>
+
+              <div class="status-line" id="status-line">Ready — 0 files</div>
+            </div>
+          </div>
         </div>
 
-        <section id="settings-section">
-            <h2>Optimization Settings</h2>
-            <div class="setting-group">
-                <label for="output-format">Output Format:</label>
-                <select id="output-format">
-                    <option value="webp">WebP (Best for Web)</option>
-                    <option value="jpeg">JPEG</option>
-                    <option value="png">PNG</option>
-                </select>
-            </div>
-            <div class="setting-group">
-                <label for="max-width">Max Width (in pixels):</label>
-                <input type="number" id="max-width" value="1920" min="100">
-            </div>
-            <div class="setting-group">
-                <label for="quality">Quality (JPEG/WebP 0.1 to 1.0):</label>
-                <input type="number" id="quality" value="0.8" min="0.1" max="1.0" step="0.05">
-            </div>
-        </section>
+        <aside class="ad-spot" aria-hidden>
+          <!-- Ad placeholder: paste ad slot here after approval -->
+          <div class="ad-placeholder">Ad placeholder</div>
+        </aside>
+      </section>
 
-        <button id="process-btn" disabled>Start Processing (0 files)</button>
+      <section id="results" class="results" aria-live="polite">
+        <div class="results-header">
+          <h2>Files</h2>
+          <div class="results-actions">
+            <button id="download-zip-btn" class="btn primary" disabled>Download all as ZIP</button>
+          </div>
+        </div>
 
-        <section id="results-section">
-            <h2>Results</h2>
-            <p id="status-message">Awaiting images...</p>
-            <div id="file-list">
-                </div>
-            <button id="download-zip-btn" disabled>Download All as ZIP</button>
-        </section>
+        <div id="file-grid" class="file-grid" role="list"></div>
+        <div id="results-footer" class="results-footer"></div>
+      </section>
     </main>
 
-    <footer>
-        <p>&copy; 2025 Serverless Tool</p>
-        </footer>
+    <footer class="site-foot">
+      <div>© <span id="year"></span> Studio Horizon · Built with ❤️ — Private client-side tools</div>
+      <div class="small-links"><a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a></div>
+    </footer>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-    <script src="script.js"></script>
+  <!-- JSZip and script -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
