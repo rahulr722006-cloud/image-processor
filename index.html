@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serverless Bulk Image Compressor & Converter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>🖼️ Bulk Image Optimizer (Client-Side)</h1>
+        <p>Compress, resize, and convert images to WebP/JPEG/PNG—all in your browser. **Files never leave your computer!**</p>
+    </header>
+
+    <main>
+        <div id="drop-area">
+            <input type="file" id="file-input" accept="image/*" multiple hidden>
+            <p>Drag & Drop Images Here</p>
+            <button id="select-files-btn">Or Select Files</button>
+        </div>
+
+        <section id="settings-section">
+            <h2>Optimization Settings</h2>
+            <div class="setting-group">
+                <label for="output-format">Output Format:</label>
+                <select id="output-format">
+                    <option value="webp">WebP (Best for Web)</option>
+                    <option value="jpeg">JPEG</option>
+                    <option value="png">PNG</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label for="max-width">Max Width (in pixels):</label>
+                <input type="number" id="max-width" value="1920" min="100">
+            </div>
+            <div class="setting-group">
+                <label for="quality">Quality (JPEG/WebP 0.1 to 1.0):</label>
+                <input type="number" id="quality" value="0.8" min="0.1" max="1.0" step="0.05">
+            </div>
+        </section>
+
+        <button id="process-btn" disabled>Start Processing (0 files)</button>
+
+        <section id="results-section">
+            <h2>Results</h2>
+            <p id="status-message">Awaiting images...</p>
+            <div id="file-list">
+                </div>
+            <button id="download-zip-btn" disabled>Download All as ZIP</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Serverless Tool</p>
+        </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
