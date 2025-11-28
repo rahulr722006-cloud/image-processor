@@ -3,56 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serverless Bulk Image Compressor & Converter</title>
+    <title>Compressly — Image Compressor (Client-side)</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1>🖼️ Bulk Image Optimizer (Client-Side)</h1>
-        <p>Compress, resize, and convert images to WebP/JPEG/PNG—all in your browser. **Files never leave your computer!**</p>
+        <h1>Compressly — Image Compressor (Client-side)</h1>
+        <p>Compress, resize & convert images directly in your browser. No upload, private & fast.</p>
     </header>
 
     <main>
-        <div id="drop-area">
-            <input type="file" id="file-input" accept="image/*" multiple hidden>
-            <p>Drag & Drop Images Here</p>
-            <button id="select-files-btn">Or Select Files</button>
-        </div>
-
-        <section id="settings-section">
-            <h2>Optimization Settings</h2>
-            <div class="setting-group">
-                <label for="output-format">Output Format:</label>
-                <select id="output-format">
-                    <option value="webp">WebP (Best for Web)</option>
-                    <option value="jpeg">JPEG</option>
-                    <option value="png">PNG</option>
-                </select>
-            </div>
-            <div class="setting-group">
-                <label for="max-width">Max Width (in pixels):</label>
-                <input type="number" id="max-width" value="1920" min="100">
-            </div>
-            <div class="setting-group">
-                <label for="quality">Quality (JPEG/WebP 0.1 to 1.0):</label>
-                <input type="number" id="quality" value="0.8" min="0.1" max="1.0" step="0.05">
-            </div>
-        </section>
-
-        <button id="process-btn" disabled>Start Processing (0 files)</button>
-
-        <section id="results-section">
-            <h2>Results</h2>
-            <p id="status-message">Awaiting images...</p>
-            <div id="file-list">
+        <div class="tool-container">
+            <div class="left-panel">
+                
+                <div id="drop-area" class="drop-zone-box">
+                    <p>Drop images here or <span class="select-link" id="select-files-btn">Select</span></p>
+                    <input type="file" id="file-input" accept="image/*" multiple hidden>
+                    
+                    <div class="drop-feedback">
+                        <p>Drag & Drop images</p>
+                        <p class="support-text">Supports: JPG, PNG, GIF, WebP. Batch compress multiple files.</p>
+                    </div>
                 </div>
-            <button id="download-zip-btn" disabled>Download All as ZIP</button>
+
+                <div class="settings-bar">
+                    <div class="setting-group">
+                        <label for="output-format">Output format</label>
+                        <select id="output-format">
+                            <option value="keep">Keep original (auto)</option>
+                            <option value="webp">WebP</option>
+                            <option value="jpeg">JPEG</option>
+                            <option value="png">PNG</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group quality-group">
+                        <label for="quality">Quality <span id="quality-value">0.8</span></label>
+                        <input type="range" id="quality" value="0.8" min="0.1" max="1.0" step="0.05">
+                    </div>
+                    
+                    <div class="setting-group">
+                        <label for="max-width">Max width (px) - 0 = keep</label>
+                        <input type="number" id="max-width" value="0" min="0" placeholder="0">
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <label class="checkbox-container">
+                        <input type="checkbox" checked>
+                        Preserve aspect
+                        <span class="checkmark"></span>
+                    </label>
+                    <div class="action-buttons">
+                        <button id="process-btn" disabled class="compress-btn">Compress Selected</button>
+                        <button id="clear-btn" class="clear-btn">Clear</button>
+                        <span class="file-count" id="status-message">0 file(s) ready</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <h2>How it works</h2>
+                <div class="info-content">
+                    <p>Images are processed locally in your browser using the **Canvas API**. Quality and format choices affect size. No files leave your device.</p>
+                </div>
+                <h2>Tips:</h2>
+                <ul class="tips-list">
+                    <li>Use **WebP** for best compression if supported by target devices.</li>
+                    <li>Lower quality to reduce file size (**0.6 - 0.8 is a good start**).</li>
+                    <li>Resize to max width to significantly reduce bytes for large photos.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <section id="results-section" style="margin-top: 40px; text-align: left; display: none;">
+            <h2>Processing Results</h2>
+            <p id="status-message-results" style="color: #61afef;"></p>
+            <div id="file-list" class="results-list"></div>
+            <button id="download-zip-btn" style="margin-top: 20px; background-color: #28a745;" disabled>Download All Images as ZIP</button>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2025 Serverless Tool</p>
-        </footer>
+        <p>Built with ❤️ · Private client-side compression · No uploads</p>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script src="script.js"></script>
