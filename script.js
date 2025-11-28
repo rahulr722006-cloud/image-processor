@@ -1,487 +1,196 @@
-/* ---------------------------------------------------- */
-/* 1. Global Variables, Reset & Base Styles */
-/* ---------------------------------------------------- */
-
-:root {
-    /* Colors */
-    --color-bg-primary: #0A0A1F; /* Deep Dark Blue-Black */
-    --color-bg-secondary: #1E1E3F; /* Feature Card Background */
-    --color-text-primary: #FFFFFF;
-    --color-text-secondary: #C0C0D0;
-    --color-border: #333355;
-
-    /* Gradient (Cyan to Purple to Pink) */
-    --gradient-neon: linear-gradient(90deg, #5EE6E8, #A36FFF, #FF0090);
-
-    /* Layout */
-    --max-width: 1200px;
-    --padding-section: 80px 0;
-}
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-secondary);
-    line-height: 1.6;
-}
-
-a {
-    color: var(--color-text-primary);
-    text-decoration: none;
-}
-
-a:hover {
-    color: var(--color-text-secondary);
-}
-
-.container {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.section-padding {
-    padding: var(--padding-section);
-}
-
-/* Helper Class for Gradient Text */
-.gradient-text {
-    background: var(--gradient-neon);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-}
-
-/* Helper Class for Gradient Icons */
-.gradient-icon {
-    font-size: 2em;
-    background: var(--gradient-neon);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-}
-
-/* ---------------------------------------------------- */
-/* 2. Header & Navigation */
-/* ---------------------------------------------------- */
-
-.header {
-    background-color: rgba(10, 10, 31, 0.95); /* Slightly transparent dark BG */
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    padding: 15px 0;
-    border-bottom: 1px solid var(--color-border);
-}
-
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo-group {
-    display: flex;
-    align-items: center;
-    font-size: 1.5em;
-    font-weight: 700;
-    color: var(--color-text-primary);
-}
-
-.studio-logo {
-    display: flex;
-    align-items: center;
-    font-size: 0.7em;
-    margin-right: 15px;
-    color: var(--color-text-secondary);
-    font-weight: 400;
-}
-
-.infinity-icon {
-    width: 20px; /* Adjust size */
-    height: 20px;
-    margin-right: 5px;
-    /* In a real scenario, this PNG should have a transparent BG */
-}
-
-.product-name {
-    font-size: 1.2em;
-    margin-left: 10px;
-}
-
-.nav a {
-    margin-left: 30px;
-    padding: 5px 0;
-    position: relative;
-    font-size: 0.95em;
-    font-weight: 600;
-    transition: color 0.3s;
-    color: var(--color-text-secondary);
-}
-
-.nav a:hover,
-.nav a.active {
-    color: var(--color-text-primary);
-}
-
-.nav a.active::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--gradient-neon);
-}
-
-/* ---------------------------------------------------- */
-/* 3. Hero Section & CTAs */
-/* ---------------------------------------------------- */
-
-.hero-section {
-    padding: 100px 0 60px;
-    text-align: center;
-    /* Optional: Subtle radial gradient in the center */
-    background: radial-gradient(circle at center top, rgba(255, 0, 144, 0.1), transparent 50%), var(--color-bg-primary);
-}
-
-.hero-headline {
-    font-size: 4em;
-    font-weight: 900;
-    color: var(--color-text-primary);
-    margin-bottom: 20px;
-    line-height: 1.1;
-}
-
-.hero-description {
-    font-size: 1.2em;
-    max-width: 800px;
-    margin: 0 auto 40px;
-}
-
-.cta-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 60px;
-}
-
-.btn {
-    padding: 14px 30px;
-    font-size: 1em;
-    font-weight: 700;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.3s;
-}
-
-.btn-primary {
-    color: var(--color-text-primary);
-}
-
-.gradient-bg {
-    background: var(--gradient-neon);
-    box-shadow: 0 4px 15px rgba(163, 111, 255, 0.4);
-}
-
-.btn-secondary {
-    background: transparent;
-    color: var(--color-text-primary);
-    position: relative;
-    z-index: 1;
-}
-
-/* Gradient Border Effect */
-.gradient-border {
-    border: 3px solid transparent;
-    background: linear-gradient(var(--color-bg-primary), var(--color-bg-primary)) padding-box, var(--gradient-neon) border-box;
-    box-shadow: 0 0 10px rgba(163, 111, 255, 0.3);
-}
-
-/* ---------------------------------------------------- */
-/* 4. Security & Privacy Blocks */
-/* ---------------------------------------------------- */
-
-.security-blocks {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    padding-top: 40px;
-}
-
-.security-card {
-    background-color: var(--color-bg-secondary);
-    padding: 30px;
-    border-radius: 12px;
-    width: 280px;
-    text-align: center;
-    border: 1px solid var(--color-border);
-}
-
-.security-card .icon {
-    font-size: 2.5em;
-    margin-bottom: 10px;
-}
-
-.security-card .card-title {
-    color: var(--color-text-primary);
-    margin-bottom: 5px;
-}
-
-.security-card .card-text {
-    font-size: 0.9em;
-}
-
-/* ---------------------------------------------------- */
-/* 5. Section Titles & Base Layouts */
-/* ---------------------------------------------------- */
-
-.section-title {
-    font-size: 2.5em;
-    font-weight: 900;
-    color: var(--color-text-primary);
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.section-subtitle {
-    text-align: center;
-    font-size: 1.1em;
-    margin-bottom: 50px;
-}
-
-/* ---------------------------------------------------- */
-/* 6. Main Features Grid */
-/* ---------------------------------------------------- */
-
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 30px;
-}
-
-.feature-card {
-    background-color: var(--color-bg-secondary);
-    padding: 30px;
-    border-radius: 12px;
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    border: 1px solid var(--color-border);
-    text-align: left;
-}
-
-.feature-icon {
-    font-size: 1.5em;
-    /* Flex shrinking to ensure the icon doesn't take too much space */
-    flex-shrink: 0; 
-    padding-top: 5px;
-}
-
-.feature-title {
-    color: var(--color-text-primary);
-    font-size: 1.25em;
-    margin-bottom: 5px;
-}
-
-.feature-description {
-    font-size: 0.9em;
-}
-
-/* ---------------------------------------------------- */
-/* 7. Compress Area (Drop Zone) */
-/* ---------------------------------------------------- */
-
-.compress-area {
-    text-align: center;
-}
-
-.drop-zone {
-    max-width: 800px;
-    margin: 40px auto 0;
-    padding: 80px 40px;
-    border: 2px dashed var(--color-border);
-    border-radius: 16px;
-    background-color: var(--color-bg-secondary);
-    transition: background-color 0.3s;
-}
-
-.upload-icon {
-    font-size: 4em;
-    margin-bottom: 10px;
-}
-
-.drop-title {
-    color: var(--color-text-primary);
-    font-size: 1.5em;
-    margin-bottom: 5px;
-}
-
-.drop-formats {
-    font-size: 0.9em;
-}
-
-/* ---------------------------------------------------- */
-/* 8. How It Works Section (Steps) */
-/* ---------------------------------------------------- */
-
-.steps-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
-    margin-top: 40px;
-}
-
-.step-card {
-    background-color: var(--color-bg-secondary);
-    padding: 30px;
-    border-radius: 12px;
-    text-align: center;
-    border: 1px solid var(--color-border);
-}
-
-.step-icon {
-    font-size: 2em;
-    font-weight: 700;
-    margin-bottom: 15px;
-    /* Use the gradient for the step number/icon */
-}
-
-.step-title {
-    color: var(--color-text-primary);
-    font-size: 1.2em;
-    margin-bottom: 10px;
-}
-
-/* ---------------------------------------------------- */
-/* 9. FAQ Section (Accordion) */
-/* ---------------------------------------------------- */
-
-.faq-accordion {
-    max-width: 800px;
-    margin: 40px auto 0;
-}
-
-.faq-item {
-    margin-bottom: 15px;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.faq-question {
-    width: 100%;
-    background-color: var(--color-bg-secondary);
-    color: var(--color-text-primary);
-    text-align: left;
-    padding: 20px;
-    font-size: 1.1em;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background-color 0.3s;
-}
-
-.faq-question:hover {
-    background-color: #2a2a50;
-}
-
-.faq-icon {
-    font-size: 1.2em;
-    /* Rotates using JavaScript */
-    transform: rotate(0deg); 
-    transition: transform 0.3s;
-}
-
-.faq-answer {
-    background-color: var(--color-bg-primary);
-    padding: 0 20px;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease-out, padding 0.4s;
-}
-
-.faq-answer p {
-    padding: 15px 0;
-    margin: 0;
-    border-top: 1px solid var(--color-border);
-}
-
-/* JavaScript active state */
-.faq-question.active .faq-icon {
-    transform: rotate(180deg);
-}
-.faq-question.active + .faq-answer {
-    max-height: 200px; /* Needs to be large enough to contain content */
-    padding: 0 20px 20px;
-}
-
-
-/* ---------------------------------------------------- */
-/* 10. Footer */
-/* ---------------------------------------------------- */
-
-.footer {
-    padding-top: 60px;
-    background-color: var(--color-bg-secondary); /* Footer is slightly lighter/different BG */
-    border-top: 1px solid var(--color-border);
-}
-
-.footer-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 40px;
-    padding-bottom: 40px;
-}
-
-.footer-title {
-    color: var(--color-text-primary);
-    font-size: 1.1em;
-    margin-bottom: 15px;
-}
-
-.footer-branding p {
-    font-size: 0.9em;
-    margin-bottom: 10px;
-}
-
-.footer-col ul {
-    list-style: none;
-    padding: 0;
-}
-
-.footer-col li a {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 0.9em;
-    color: var(--color-text-secondary);
-    transition: color 0.3s;
-}
-
-.footer-col li a:hover {
-    color: var(--color-text-primary);
-}
-
-.copyright {
-    text-align: center;
-    padding: 20px 0;
-    border-top: 1px solid var(--color-border);
-    background-color: #101030; /* Slight variation in bottom bar */
-}
-
-.copyright p {
-    font-size: 0.8em;
-    color: var(--color-text-secondary);
-}
+// Elements
+const dropArea = document.getElementById('drop-area');
+const fileInput = document.getElementById('file-input');
+const selectFilesBtn = document.getElementById('select-files-btn');
+const processBtn = document.getElementById('process-btn');
+const clearBtn = document.getElementById('clear-btn');
+const statusLine = document.getElementById('status-line');
+const fileGrid = document.getElementById('file-grid');
+const downloadZipBtn = document.getElementById('download-zip-btn');
+
+const outputFormat = document.getElementById('output-format');
+const qualityEl = document.getElementById('quality');
+const qualityValue = document.getElementById('quality-value');
+const maxWidthEl = document.getElementById('max-width');
+const preserveAspect = document.getElementById('preserve-aspect');
+
+let images = []; // {id, file, url, blob, dom}
+
+// helpers
+const uid = () => crypto.randomUUID?.() || Date.now().toString(36);
+const formatToMime = (fmt, original) => {
+  if (fmt === 'keep') return original;
+  if (fmt === 'webp') return 'image/webp';
+  if (fmt === 'jpeg') return 'image/jpeg';
+  if (fmt === 'png') return 'image/png';
+  return original;
+};
+
+// UI wiring
+selectFilesBtn.addEventListener('click', ()=> fileInput.click());
+fileInput.addEventListener('change', e => handleFiles(e.target.files));
+dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.style.transform='translateY(-6px)'; });
+dropArea.addEventListener('dragleave', e => { e.preventDefault(); dropArea.style.transform='none'; });
+dropArea.addEventListener('drop', e => { e.preventDefault(); dropArea.style.transform='none'; handleFiles(e.dataTransfer.files); });
+
+qualityEl.addEventListener('input', (e)=> qualityValue.textContent = Number(e.target.value).toFixed(2));
+processBtn.addEventListener('click', processAll);
+clearBtn.addEventListener('click', clearAll);
+downloadZipBtn.addEventListener('click', downloadAllZip);
+
+window.addEventListener('paste', ev=>{
+  const items = ev.clipboardData?.items;
+  if (!items) return;
+  const files = [];
+  for (const it of items) if (it.type?.startsWith('image/')) { const f = it.getAsFile(); if (f) files.push(f); }
+  if (files.length) handleFiles(files);
+});
+
+// handle files
+function handleFiles(fileList){
+  const arr = Array.from(fileList).filter(f=>f.type && f.type.startsWith('image/'));
+  if (!arr.length) return;
+  arr.forEach(f=>{
+    const id = uid();
+    const url = URL.createObjectURL(f);
+    const item = {id, file:f, url, blob:null, dom:null};
+    images.push(item);
+    renderCard(item);
+  });
+  updateStatus();
+}
+
+function renderCard(item){
+  const card = document.createElement('div'); card.className='file-card'; card.id='card-'+item.id;
+  const img = document.createElement('img'); img.className='thumb'; img.src = item.url;
+  const meta = document.createElement('div'); meta.className='file-meta';
+  meta.innerHTML = `<b>${item.file.name}</b><div class="small">Original: ${(item.file.size/1024).toFixed(1)} KB</div>
+    <div class="progress"><i style="width:0%"></i></div>`;
+  const actions = document.createElement('div'); actions.className='file-actions';
+  const dl = document.createElement('button'); dl.className='btn small'; dl.textContent='Download'; dl.disabled=true;
+  const rm = document.createElement('button'); rm.className='btn small ghost'; rm.textContent='Remove';
+  actions.appendChild(dl); actions.appendChild(rm);
+
+  card.appendChild(img); card.appendChild(meta); card.appendChild(actions);
+  fileGrid.appendChild(card);
+
+  item.dom = {card, img, meta, dl, rm};
+  rm.addEventListener('click', ()=>{
+    try{ URL.revokeObjectURL(item.url); if (item.blob) URL.revokeObjectURL(item.blob.url); }catch(e){}
+    images = images.filter(x=>x.id !== item.id);
+    card.remove();
+    updateStatus();
+  });
+  dl.addEventListener('click', ()=>{
+    if (!item.blob) return;
+    const a = document.createElement('a'); a.href = item.blob.url; a.download = item.blob.name;
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+}
+
+function updateStatus(){
+  statusLine.textContent = `Ready — ${images.length} file(s)`;
+  processBtn.disabled = images.length === 0;
+  downloadZipBtn.disabled = true;
+}
+
+// compression
+function compressViaCanvas(file, options){
+  return new Promise((resolve, reject)=>{
+    const img = new Image();
+    img.onload = ()=>{
+      try {
+        let w = img.naturalWidth, h = img.naturalHeight;
+        if (options.maxWidth > 0 && w > options.maxWidth){
+          if (options.preserveAspect){
+            const ratio = options.maxWidth / w;
+            w = Math.round(options.maxWidth);
+            h = Math.round(h * ratio);
+          } else { w = options.maxWidth; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+
+        const isLossy = (options.mime === 'image/webp' || options.mime === 'image/jpeg');
+        const q = isLossy ? options.quality : undefined;
+        canvas.toBlob((blob)=>{
+          if (!blob) return reject(new Error('toBlob failed'));
+          const ext = (options.mime.split('/')[1] || file.name.split('.').pop()).split('+')[0];
+          const base = file.name.replace(/\.[^/.]+$/, '');
+          const outName = `${base}_opt.${ext}`;
+          const url = URL.createObjectURL(blob);
+          resolve({blob, url, name: outName, size: blob.size, mime: blob.type});
+        }, options.mime, q);
+      } catch(e){ reject(e); }
+    };
+    img.onerror = ()=> reject(new Error('image load error'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+async function processAll(){
+  if (!images.length) return;
+  processBtn.disabled = true; clearBtn.disabled = true;
+  statusLine.textContent = 'Processing...';
+  const fmt = outputFormat.value;
+  const maxW = parseInt(maxWidthEl.value || '0');
+  const q = parseFloat(qualityEl.value || '0.8');
+  const preserve = preserveAspect.checked;
+
+  for (let i=0;i<images.length;i++){
+    const item = images[i];
+    const progressFill = item.dom.meta.querySelector('.progress > i');
+    item.dom.meta.querySelector('.small').textContent = 'Processing...';
+    try {
+      const mime = formatToMime(fmt, item.file.type);
+      progressFill.style.width = '10%';
+      const res = await compressViaCanvas(item.file, {mime, quality:q, maxWidth: maxW, preserveAspect: preserve});
+      item.blob = {url: res.url, name: res.name, size: res.size, mime: res.mime};
+      item.dom.dl.disabled = false;
+      item.dom.meta.querySelector('.small').innerHTML = `Original: ${(item.file.size/1024).toFixed(1)} KB → ${(res.size/1024).toFixed(1)} KB`;
+      progressFill.style.width = '100%';
+    } catch(err){
+      console.error(err);
+      item.dom.meta.querySelector('.small').textContent = 'Error';
+      progressFill.style.width = '0%';
+    }
+    await new Promise(r=>setTimeout(r,120));
+  }
+
+  // enable zip if at least one blob
+  downloadZipBtn.disabled = images.filter(i=>i.blob).length === 0;
+  processBtn.disabled = false; clearBtn.disabled = false;
+  statusLine.textContent = `Done — ${images.length} processed`;
+}
+
+// ZIP download
+async function downloadAllZip(){
+  const valid = images.filter(i=>i.blob);
+  if (!valid.length) return;
+  downloadZipBtn.disabled = true;
+  statusLine.textContent = 'Building ZIP...';
+  const zip = new JSZip();
+  // fetch each blob url into blob
+  await Promise.all(valid.map(async item=>{
+    const b = await fetch(item.blob.url).then(r=>r.blob());
+    zip.file(item.blob.name, b);
+  }));
+  const content = await zip.generateAsync({type:'blob'});
+  const a = document.createElement('a');
+  const url = URL.createObjectURL(content);
+  a.href = url; a.download = 'compressly_images.zip';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  statusLine.textContent = 'ZIP downloaded';
+  downloadZipBtn.disabled = false;
+}
+
+function clearAll(){
+  images.forEach(it=>{ try{ URL.revokeObjectURL(it.url); if (it.blob) URL.revokeObjectURL(it.blob.url);}catch(e){} });
+  images = []; fileGrid.innerHTML = ''; updateStatus();
+}
+
+// update footer year
+document.getElementById('year').textContent = new Date().getFullYear();
