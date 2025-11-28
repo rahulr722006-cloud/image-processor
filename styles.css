@@ -82,3 +82,32 @@ input[type="range"]{width:100%}
   .file-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
   .brand-logo{width:58px;height:58px}
 }
+
+/* Center internal pages (about, privacy, contact) */
+.page-container {
+    max-width: 800px;       /* width of the content */
+    margin: 0 auto;         /* centers the entire page */
+    padding: 40px 20px;     /* breathing room */
+}
+
+.internal-content {
+    text-align: left;       /* keep text aligned nicely */
+    margin-top: 20px;
+}
+
+.internal-header {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.back-link {
+    color: var(--accent2);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.internal-content h1,
+.internal-content h2 {
+    text-align: center;     /* Titles centered */
+    margin-bottom: 15px;
+}
