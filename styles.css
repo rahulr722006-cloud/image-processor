@@ -1,108 +1,199 @@
+/* --- Global Reset and Base Styles --- */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f7f9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5; /* Light gray background */
     color: #333;
     margin: 0;
     padding: 0;
     text-align: center;
+    line-height: 1.6;
 }
 
 header {
-    background-color: #4CAF50;
+    background-color: #007bff; /* Primary blue for header */
     color: white;
-    padding: 20px 0;
-    margin-bottom: 20px;
+    padding: 30px 0;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0 0 5px;
+    font-size: 2.2em;
+}
+
+header p {
+    margin: 0;
+    font-size: 1.1em;
+    opacity: 0.9;
 }
 
 main {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto 50px;
+    padding: 30px;
     background-color: white;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
 }
 
+/* --- Drop Area and Input Styles --- */
 #drop-area {
-    border: 2px dashed #ccc;
-    border-radius: 8px;
-    padding: 40px;
-    margin-bottom: 20px;
+    border: 3px dashed #007bff; /* Primary color dashed border */
+    border-radius: 10px;
+    padding: 60px 20px;
+    margin-bottom: 30px;
     cursor: pointer;
-    background-color: #fafafa;
+    background-color: #f7f9fc; /* Very light blue background */
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+#drop-area:hover {
+    background-color: #e9f0f9;
+    border-color: #0056b3;
 }
 
 #drop-area p {
-    margin: 10px 0;
-    font-weight: bold;
-}
-
-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-}
-
-button:hover:not(:disabled) {
-    background-color: #0056b3;
-}
-
-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-
-#settings-section, #results-section {
-    text-align: left;
-    margin-top: 30px;
-    padding: 20px;
-    border: 1px solid #eee;
-    border-radius: 8px;
-}
-
-.setting-group {
-    margin-bottom: 15px;
-}
-
-label {
-    display: block;
-    margin-bottom: 5px;
+    margin: 15px 0;
+    font-size: 1.2em;
     font-weight: 600;
 }
 
-input[type="number"], select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
+/* --- Button Styles --- */
+button {
+    background-color: #28a745; /* Green for primary actions */
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+button:hover:not(:disabled) {
+    background-color: #1e7e34;
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#select-files-btn {
+    background-color: #6c757d; /* Gray for secondary action */
+}
+
+#select-files-btn:hover:not(:disabled) {
+    background-color: #5a6268;
 }
 
 #process-btn {
     width: 100%;
     margin-top: 20px;
-    padding: 15px;
-    background-color: #4CAF50;
+    padding: 18px;
+    font-size: 1.2em;
+    background-color: #007bff; /* Blue for the main button */
 }
 
 #process-btn:hover:not(:disabled) {
-    background-color: #45a049;
+    background-color: #0056b3;
+}
+
+/* --- Settings and Input Field Styles --- */
+#settings-section, #results-section {
+    text-align: left;
+    margin-top: 30px;
+    padding: 25px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.setting-group {
+    display: inline-block;
+    width: 30%; /* Space out the settings */
+    margin-right: 3%;
+    margin-bottom: 20px;
+    vertical-align: top;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+input[type="number"], select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+/* --- Results Area Styles --- */
+#status-message {
+    font-size: 1.1em;
+    font-weight: 500;
+    padding: 10px 0;
 }
 
 #file-list {
-    margin-top: 15px;
-    border-top: 1px solid #eee;
+    margin-top: 20px;
+    border-top: 2px solid #e9ecef;
     padding-top: 15px;
+    max-height: 400px;
+    overflow-y: auto; /* Scroll for many files */
 }
 
 .file-info {
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px dotted #ddd;
+    padding: 10px 0;
+    border-bottom: 1px dotted #ced4da;
+    align-items: center;
+}
+
+.file-info:last-child {
+    border-bottom: none;
+}
+
+.file-info span:first-child {
+    flex-grow: 1;
+    font-size: 0.95em;
+    color: #333;
+}
+
+.file-info span:last-child {
+    font-weight: 700;
+    width: 180px; /* Consistent width for size changes */
+    text-align: right;
+}
+
+/* --- Footer --- */
+footer {
+    padding: 20px;
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+    .setting-group {
+        width: 100%;
+        margin-right: 0;
+    }
+    main {
+        padding: 20px;
+        margin: 0 10px 30px;
+    }
+    header h1 {
+        font-size: 1.8em;
+    }
 }
